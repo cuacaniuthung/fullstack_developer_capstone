@@ -87,7 +87,7 @@ return(
       ))}
     </div>  
   </div>
-)
+    )   
 }
 
-export default Dealer
+export default Dealer;
