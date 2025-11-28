@@ -9,11 +9,7 @@ import os
 # Imports cho các hàm tiện ích
 from .models import CarMake, CarModel
 from .populate import initiate
-# Giữ lại import này nếu bạn vẫn muốn dùng logic từ restapis
-# Tuy nhiên, nếu bạn đang dùng logic ghi file JSON ở cuối file,
-# hãy đảm bảo chỉ có 1 hàm post_review.
-# Dựa trên lỗi F811, tôi giả định đây là import gây lỗi và xóa nó.
-# from .restapis import post_review 
+from .restapis import post_review
 # Xóa các import không dùng (F401): render, get_request, analyze_review_sentiments
 
 
@@ -34,8 +30,11 @@ def login_user(request):
     if user is not None:
         # If user is valid, call login method to login current user
         login(request, user)
-        # Sửa lỗi E501 dòng 17
-        data = {"userName": username, "status": "Authenticated"}
+        # Sửa lỗi E501 dòng 17 và W291
+        data = {
+            "userName": username,
+            "status": "Authenticated"
+        }
     return JsonResponse(data)
 
 
@@ -229,9 +228,24 @@ def get_dealer_details(request, dealer_id):
         )
 
 
-# Hàm mới thay thế cho post_review cũ để tránh F811
+# Create a `add_review` view to submit a review
+def add_review(request):
+    if not request.user.is_anonymous:
+        data = json.loads(request.body)
+        try:
+            post_review(data)
+            return JsonResponse({"status": 200})
+        except Exception as e:
+            print(f"Error posting review: {e}")
+            return JsonResponse(
+                {"status": 401, "message": "Error in posting review"}
+            )
+    else:
+        return JsonResponse({"status": 403, "message": "Unauthorized"})
+
+
 @csrf_exempt
-def save_review_to_file(request):
+def post_review(request):
     # Hàm này dùng để ghi review vào file JSON cục bộ
     if request.method == 'POST':
         try:
@@ -249,10 +263,8 @@ def save_review_to_file(request):
 
             # Ép kiểu dealer_id từ chuỗi (từ Frontend) sang số nguyên
             if new_review_data.get('dealership'):
-                # Sửa lỗi ngắt dòng dài
-                new_review_data['dealership'] = int(
-                    new_review_data['dealership']
-                )
+                new_review_data['dealership'] = \
+                    int(new_review_data['dealership'])
 
             # 4. Gán ID mới (ID bằng ID lớn nhất hiện tại + 1)
             all_reviews = reviews_data.get('reviews', [])
@@ -267,42 +279,25 @@ def save_review_to_file(request):
             with open(REVIEWS_FILE_PATH, 'w', encoding='utf-8') as f:
                 json.dump(reviews_data, f, ensure_ascii=False, indent=4)
 
+            # Sửa lỗi E501 và W291 trong print statement
             print(
                 f"Successfully saved new review (ID: {new_id}) "
                 f"for dealer ID {new_review_data.get('dealership')}"
             )
+            # Sửa lỗi E501 và W291 trong JsonResponse
             return JsonResponse(
-                {"status": 200,
-                 "message": "Review submitted and saved successfully"},
+                {
+                    "status": 200,
+                    "message": "Review submitted and saved successfully"
+                },
                 status=200
             )
 
         except Exception as e:
-            print(f"Error during save_review_to_file: {e}")
+            print(f"Error during post_review: {e}")
             return JsonResponse(
                 {"error": f"Failed to submit review: {str(e)}"},
                 status=500
             )
     else:
         return JsonResponse({"error": "Method not allowed"}, status=405)
-
-
-# Create a `add_review` view to submit a review (đã cập nhật để dùng hàm mới)
-def add_review(request):
-    if not request.user.is_anonymous:
-        # Xóa biến 'data' không dùng (F841)
-        # data = json.loads(request.body) 
-        try:
-            # Giả định post_review từ restapis.py dùng để gửi lên cloud
-            # Dưới đây tôi giữ nguyên logic ban đầu, nếu restapis.post_review 
-            # không tồn tại/gây lỗi, bạn phải import nó HOẶC dùng save_review_to_file
-            # post_review(data) 
-            return JsonResponse({"status": 200})
-        except Exception as e:
-            print(f"Error posting review: {e}")
-            # Xóa khoảng trắng thừa (W291)
-            return JsonResponse(
-                {"status": 401, "message": "Error in posting review"}
-            )
-    else:
-        return JsonResponse({"status": 403, "message": "Unauthorized"})
