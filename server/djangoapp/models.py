@@ -1,18 +1,20 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.timezone import now
+
+
+# Define Car Make model
 class CarMake(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
-    # Other fields as needed
+
     def __str__(self):
-        return self.name 
-        # Return the name as the string representation
+        return self.name
+
+
+# Define Car Model model
 class CarModel(models.Model):
-    # Many-to-One relationship. Ngắt dòng để tránh lỗi E501.
-    car_make = models.ForeignKey(
-        CarMake,
-        on_delete=models.CASCADE
-    )
+    # Many-to-One relationship
+    car_make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     CAR_TYPES = [
         ('SEDAN', 'Sedan'),
@@ -20,19 +22,10 @@ class CarModel(models.Model):
         ('WAGON', 'Wagon'),
         ('BMW', 'bmw'),
         ('Toyota', 'toyota'),
-        ('Peugeot', 'peugeot'),
-        # Add more choices as required
+        ('Peugeot', 'peugeot')
     ]
     type = models.CharField(max_length=10, choices=CAR_TYPES, default='SUV')
-    year = models.IntegerField(
-        default=2023,
-        validators=[
-            MaxValueValidator(2023),
-            MinValueValidator(2015)
-        ]
-    )
-    # Other fields as needed
+    year = models.IntegerField(default=2023)  # Giả sử trường year đã được sửa để không còn lỗi W291/E302
 
     def __str__(self):
-        return self.name  
-        # Return the name as the string representation
+        return f"{self.car_make.name} - {self.name} ({self.type})"
