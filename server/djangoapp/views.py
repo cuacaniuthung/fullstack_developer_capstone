@@ -6,13 +6,13 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import os
-# Imports cho các hàm tiện ích
 from .models import CarMake, CarModel
 from .populate import initiate
-# from .restapis import post_review
+
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
+
 
 # Create a `login_request` view to handle sign in request
 @csrf_exempt
@@ -34,11 +34,13 @@ def login_user(request):
         }
     return JsonResponse(data)
 
+
 # Create a `logout_request` view to handle sign out request
 def logout_request(request):
     logout(request)  # Terminate user session
     data = {"userName": ""}  # Return empty username
     return JsonResponse(data)
+
 
 # Create a `registration` view to handle sign up request
 @csrf_exempt
@@ -76,6 +78,7 @@ def registration(request):
         data = {"userName": username, "error": "Already Registered"}
         return JsonResponse(data)
 
+
 def get_cars(request):
     """
     Hàm lấy danh sách xe và populate dữ liệu nếu cần.
@@ -96,6 +99,7 @@ def get_cars(request):
             "CarMake": car_model.car_make.name
         })
     return JsonResponse({"CarModels": cars})
+
 
 # Update the `get_dealerships` render list of dealerships all by default,
 # particular state if state is passed
@@ -138,6 +142,7 @@ def get_dealerships(request, state="All"):
             {"error": f"Error processing request: {str(e)}"}, status=500
         )
 
+
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
 def get_dealer_reviews(request, dealer_id):
     try:
@@ -171,6 +176,7 @@ def get_dealer_reviews(request, dealer_id):
             {"error": f"Error processing reviews: {str(e)}"}, status=500
         )
 
+
 # Create a `get_dealer_details` view to render the dealer details
 def get_dealer_details(request, dealer_id):
     try:
@@ -202,6 +208,7 @@ def get_dealer_details(request, dealer_id):
             {"error": f"Error processing request: {str(e)}"}, status=500
         )
 
+
 # Create a `add_review` view to submit a review
 def add_review(request):
     if not request.user.is_anonymous:
@@ -216,6 +223,7 @@ def add_review(request):
             )
     else:
         return JsonResponse({"status": 403, "message": "Unauthorized"})
+
 
 @csrf_exempt
 def post_review(request):
