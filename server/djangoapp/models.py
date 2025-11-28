@@ -14,7 +14,10 @@ class CarMake(models.Model):
 # Define Car Model model
 class CarModel(models.Model):
     # Many-to-One relationship
-    car_make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
+    car_make = models.ForeignKey(
+        CarMake,
+        on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=100)
     CAR_TYPES = [
         ('SEDAN', 'Sedan'),
@@ -24,8 +27,12 @@ class CarModel(models.Model):
         ('Toyota', 'toyota'),
         ('Peugeot', 'peugeot')
     ]
-    type = models.CharField(max_length=10, choices=CAR_TYPES, default='SUV')
-    year = models.IntegerField(default=2023)  # Giả sử trường year đã được sửa để không còn lỗi W291/E302
+    type = models.CharField(
+        max_length=10,
+        choices=CAR_TYPES,
+        default='SUV'
+    )
+    year = models.IntegerField(default=2023)
 
     def __str__(self):
         return f"{self.car_make.name} - {self.name} ({self.type})"
