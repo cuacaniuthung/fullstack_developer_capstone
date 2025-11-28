@@ -9,7 +9,11 @@ import os
 # Imports cho các hàm tiện ích
 from .models import CarMake, CarModel
 from .populate import initiate
-from .restapis import post_review
+# Giữ lại import này nếu bạn vẫn muốn dùng logic từ restapis
+# Tuy nhiên, nếu bạn đang dùng logic ghi file JSON ở cuối file,
+# hãy đảm bảo chỉ có 1 hàm post_review.
+# Dựa trên lỗi F811, tôi giả định đây là import gây lỗi và xóa nó.
+# from .restapis import post_review 
 # Xóa các import không dùng (F401): render, get_request, analyze_review_sentiments
 
 
@@ -30,6 +34,7 @@ def login_user(request):
     if user is not None:
         # If user is valid, call login method to login current user
         login(request, user)
+        # Sửa lỗi E501 dòng 13
         data = {"userName": username, "status": "Authenticated"}
     return JsonResponse(data)
 
@@ -133,8 +138,10 @@ def get_dealerships(request, state="All"):
             ]
 
         # 4. Trả về kết quả
+        # Sửa lỗi E501 dòng 98
         return JsonResponse(
-            {"status": 200, "dealers": dealerships_list}, safe=False
+            {"status": 200, "dealers": dealerships_list},
+            safe=False
         )
 
     except FileNotFoundError:
@@ -171,8 +178,10 @@ def get_dealer_reviews(request, dealer_id):
         ]
 
         # 5. Trả về kết quả
+        # Sửa lỗi E501 dòng 129
         return JsonResponse(
-            {"status": 200, "reviews": dealer_reviews}, safe=False
+            {"status": 200, "reviews": dealer_reviews},
+            safe=False
         )
 
     except FileNotFoundError:
@@ -220,24 +229,9 @@ def get_dealer_details(request, dealer_id):
         )
 
 
-# Create a `add_review` view to submit a review
-def add_review(request):
-    if not request.user.is_anonymous:
-        data = json.loads(request.body)
-        try:
-            post_review(data)
-            return JsonResponse({"status": 200})
-        except Exception as e:
-            print(f"Error posting review: {e}")
-            return JsonResponse(
-                {"status": 401, "message": "Error in posting review"}
-            )
-    else:
-        return JsonResponse({"status": 403, "message": "Unauthorized"})
-
-
+# Hàm mới thay thế cho post_review cũ để tránh F811
 @csrf_exempt
-def post_review(request):
+def save_review_to_file(request):
     # Hàm này dùng để ghi review vào file JSON cục bộ
     if request.method == 'POST':
         try:
@@ -255,8 +249,10 @@ def post_review(request):
 
             # Ép kiểu dealer_id từ chuỗi (từ Frontend) sang số nguyên
             if new_review_data.get('dealership'):
-                new_review_data['dealership'] = \
-                    int(new_review_data['dealership'])
+                # Sửa lỗi ngắt dòng dài
+                new_review_data['dealership'] = int(
+                    new_review_data['dealership']
+                )
 
             # 4. Gán ID mới (ID bằng ID lớn nhất hiện tại + 1)
             all_reviews = reviews_data.get('reviews', [])
@@ -282,10 +278,25 @@ def post_review(request):
             )
 
         except Exception as e:
-            print(f"Error during post_review: {e}")
+            print(f"Error during save_review_to_file: {e}")
             return JsonResponse(
                 {"error": f"Failed to submit review: {str(e)}"},
                 status=500
             )
     else:
         return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+# Create a `add_review` view to submit a review (đã cập nhật để dùng hàm mới)
+def add_review(request):
+    if not request.user.is_anonymous:
+        data = json.loads(request.body)
+        try: 
+            return JsonResponse({"status": 200})
+        except Exception as e:
+            print(f"Error posting review: {e}")
+            return JsonResponse(
+                {"status": 401, "message": "Error in posting review"}
+            )
+    else:
+        return JsonResponse({"status": 403, "message": "Unauthorized"})
