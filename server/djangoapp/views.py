@@ -108,6 +108,7 @@ DATA_FILE_PATH = os.path.join(
     BASE_DIR, 'database', 'data', 'dealerships.json'
 )
 
+
 # Giữ tên hàm là get_dealerships theo lựa chọn của bạn
 def get_dealerships(request, state="All"):
     try:
