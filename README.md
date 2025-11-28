@@ -1,12 +1,11 @@
 
 
 
-````md
 # 🚗 Coding Project Template
 
 This project provides a Django-based backend for a car dealership website.
 
----
+
 
 ## ✅ Setup & Installation
 
@@ -87,5 +86,4 @@ Nếu bạn muốn mình có thể thêm:
 🔹 License & contributor section  
 🔹 Badge (build, python version, etc.)
 
-Bạn muốn bổ sung không? 😊
 ```
