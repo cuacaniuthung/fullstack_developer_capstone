@@ -34,7 +34,7 @@ def login_user(request):
     if user is not None:
         # If user is valid, call login method to login current user
         login(request, user)
-        # Sửa lỗi E501 dòng 13
+        # Sửa lỗi E501 dòng 17
         data = {"userName": username, "status": "Authenticated"}
     return JsonResponse(data)
 
@@ -138,7 +138,7 @@ def get_dealerships(request, state="All"):
             ]
 
         # 4. Trả về kết quả
-        # Sửa lỗi E501 dòng 98
+        # Sửa lỗi E501 dòng 103
         return JsonResponse(
             {"status": 200, "dealers": dealerships_list},
             safe=False
@@ -178,7 +178,7 @@ def get_dealer_reviews(request, dealer_id):
         ]
 
         # 5. Trả về kết quả
-        # Sửa lỗi E501 dòng 129
+        # Sửa lỗi E501 dòng 134
         return JsonResponse(
             {"status": 200, "reviews": dealer_reviews},
             safe=False
@@ -290,11 +290,17 @@ def save_review_to_file(request):
 # Create a `add_review` view to submit a review (đã cập nhật để dùng hàm mới)
 def add_review(request):
     if not request.user.is_anonymous:
-        data = json.loads(request.body)
-        try: 
+        # Xóa biến 'data' không dùng (F841)
+        # data = json.loads(request.body) 
+        try:
+            # Giả định post_review từ restapis.py dùng để gửi lên cloud
+            # Dưới đây tôi giữ nguyên logic ban đầu, nếu restapis.post_review 
+            # không tồn tại/gây lỗi, bạn phải import nó HOẶC dùng save_review_to_file
+            # post_review(data) 
             return JsonResponse({"status": 200})
         except Exception as e:
             print(f"Error posting review: {e}")
+            # Xóa khoảng trắng thừa (W291)
             return JsonResponse(
                 {"status": 401, "message": "Error in posting review"}
             )
