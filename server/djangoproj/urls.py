@@ -16,7 +16,6 @@ urlpatterns = [
     path('login/', TemplateView.as_view(template_name="index.html")),
     path('register/', TemplateView.as_view(template_name="index.html")),
     path('dealers/', TemplateView.as_view(template_name="index.html")),
-
     # Đường dẫn cho Dealer Detail và Review 
     # (chuyển hướng sang index.html để React xử lý)
     # Sửa lỗi E225: thêm khoảng trắng quanh dấu phẩy và toán tử
