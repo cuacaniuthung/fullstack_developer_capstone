@@ -14,18 +14,25 @@ from .populate import initiate
 logger = logging.getLogger(__name__)
 
 
-# Create a `login_request` view to handle sign in request
+# Create a `login_request` 
+# view to handle sign in request
 @csrf_exempt
 def login_user(request):
-    # Get username and password from request.POST dictionary
+    # Get username and password 
+    # from request.POST dictionary
     data = json.loads(request.body)
     username = data['userName']
     password = data['password']
-    # Try to check if provide credential can be authenticated
-    user = authenticate(username=username, password=password)
+    # Try to check if provide 
+    # credential can be authenticated
+    user = authenticate(
+        username=username,
+        password=password
+    )
     data = {"userName": username}
     if user is not None:
-        # If user is valid, call login method to login current user
+        # If user is valid, call login 
+        # method to login current user
         login(request, user)
         # Sửa lỗi E501 dòng 17 và W291
         data = {
@@ -72,10 +79,16 @@ def registration(request):
         )
         # Login the user and redirect to list page
         login(request, user)
-        data = {"userName": username, "status": "Authenticated"}
+        data = {
+            "userName": username, 
+            "status": "Authenticated"
+        }
         return JsonResponse(data)
     else:
-        data = {"userName": username, "error": "Already Registered"}
+        data = {
+            "userName": username, 
+            "error": "Already Registered"
+        }
         return JsonResponse(data)
 
 
@@ -101,11 +114,15 @@ def get_cars(request):
     return JsonResponse({"CarModels": cars})
 
 
-# Update the `get_dealerships` render list of dealerships all by default,
+# Update the `get_dealerships` render 
+# list of dealerships all by default,
 # particular state if state is passed
 BASE_DIR = settings.BASE_DIR
 DATA_FILE_PATH = os.path.join(
-    BASE_DIR, 'database', 'data', 'dealerships.json'
+    BASE_DIR, 
+    'database', 
+    'data', 
+    'dealerships.json'
 )
 
 
@@ -140,7 +157,8 @@ def get_dealerships(request, state="All"):
         )
     except Exception as e:
         return JsonResponse(
-            {"error": f"Error processing request: {str(e)}"}, status=500
+            {"error": f"Error processing request: {str(e)}"}, 
+            status=500
         )
 
 
@@ -149,7 +167,10 @@ def get_dealer_reviews(request, dealer_id):
     try:
         # 1. Định nghĩa đường dẫn tuyệt đối đến file reviews.json
         REVIEWS_FILE_PATH = os.path.join(
-            settings.BASE_DIR, 'database', 'data', 'reviews.json'
+            settings.BASE_DIR, 
+            'database', 
+            'data', 
+            'reviews.json'
         )
         # 2. Đọc toàn bộ dữ liệu từ file JSON
         with open(REVIEWS_FILE_PATH, 'r', encoding='utf-8') as f:
@@ -170,11 +191,13 @@ def get_dealer_reviews(request, dealer_id):
         )
     except FileNotFoundError:
         return JsonResponse(
-            {"error": "Reviews data file not found"}, status=404
+            {"error": "Reviews data file not found"}, 
+            status=404
         )
     except Exception as e:
         return JsonResponse(
-            {"error": f"Error processing reviews: {str(e)}"}, status=500
+            {"error": f"Error processing reviews: {str(e)}"}, 
+            status=500
         )
 
 
@@ -183,30 +206,43 @@ def get_dealer_details(request, dealer_id):
     try:
         # Đường dẫn file JSON
         DATA_FILE_PATH = os.path.join(
-            settings.BASE_DIR, 'database', 'data', 'dealerships.json'
+            settings.BASE_DIR, 
+            'database', 
+            'data', 
+            'dealerships.json'
         )
         with open(DATA_FILE_PATH, 'r', encoding='utf-8') as f:
             data = json.load(f)
         all_dealers = data['dealerships']
         # Tìm đại lý theo ID
         dealer_obj = next(
-            (d for d in all_dealers if d['id'] == dealer_id), None
+            (d for d in all_dealers if d['id'] == dealer_id), 
+            None
         )
         if dealer_obj:
             # Trả về một mảng chứa 1 đối tượng để khớp với front-end hiện tại
             return JsonResponse(
-                {"status": 200, "dealer": [dealer_obj]}, safe=False
+                {
+                    "status": 200, 
+                    "dealer": [dealer_obj]
+                }, 
+                safe=False
             )
         else:
-            return JsonResponse({"error": "Dealer not found"}, status=404)
+            return JsonResponse(
+                {"error": "Dealer not found"}, 
+                status=404
+            )
 
     except FileNotFoundError:
         return JsonResponse(
-            {"error": "Dealerships data file not found"}, status=404
+            {
+                "error": "Dealerships data file not found"}, status=404
         )
     except Exception as e:
         return JsonResponse(
-            {"error": f"Error processing request: {str(e)}"}, status=500
+            {
+                "error": f"Error processing request: {str(e)}"}, status=500
         )
 
 
@@ -220,20 +256,32 @@ def add_review(request):
         except Exception as e:
             print(f"Error posting review: {e}")
             return JsonResponse(
-                {"status": 401, "message": "Error in posting review"}
+                {
+                    "status": 401, 
+                    "message": "Error in posting review"
+                }
             )
     else:
-        return JsonResponse({"status": 403, "message": "Unauthorized"})
+        return JsonResponse(
+            {
+                "status": 403, 
+                "message": "Unauthorized"
+            }
+        )
 
 
 @csrf_exempt
 def post_review(request):
-    # Hàm này dùng để ghi review vào file JSON cục bộ
+    # Hàm này dùng để ghi review 
+    # vào file JSON cục bộ
     if request.method == 'POST':
         try:
             # 1. Định nghĩa đường dẫn file reviews.json
             REVIEWS_FILE_PATH = os.path.join(
-                settings.BASE_DIR, 'database', 'data', 'reviews.json'
+                settings.BASE_DIR, 
+                'database', 
+                'data', 
+                'reviews.json'
             )
             # 2. Đọc dữ liệu hiện có
             with open(REVIEWS_FILE_PATH, 'r', encoding='utf-8') as f:
@@ -257,7 +305,7 @@ def post_review(request):
                 json.dump(reviews_data, f, ensure_ascii=False, indent=4)
             # Sửa lỗi E501 và W291 trong print statement
             print(
-                f"Successfully saved new review (ID: {new_id}) "
+                f"Successfully saved new review (ID: {new_id})"
                 f"for dealer ID {new_review_data.get('dealership')}"
             )
             # Sửa lỗi E501 và W291 trong JsonResponse
