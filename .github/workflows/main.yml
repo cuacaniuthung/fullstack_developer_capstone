@@ -1,0 +1,63 @@
+name: 'Lint Code'
+
+# Workflow sẽ chạy khi có push hoặc pull request lên nhánh main hoặc master
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # 1. Job kiểm tra code Python (Backend)
+  lint_python:
+    name: Lint Python Files (Flake8)
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+
+    - name: Print working directory
+      run: pwd
+
+    - name: Run Linter
+      run: |
+        # Lệnh này tìm tất cả các file .py và chạy flake8
+        # Thường chỉ cần chạy flake8 trên thư mục server
+        find ./server -name "*.py" -exec flake8 {} +
+        echo "Linted all the python files successfully"
+
+  # 2. Job kiểm tra code JavaScript (Database files)
+  lint_js:
+      name: Lint JavaScript Files (JSHint)
+      runs-on: ubuntu-latest
+
+      steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          # Sử dụng phiên bản Node.js được yêu cầu
+          node-version: 14
+
+      - name: Install JSHint
+        run: npm install jshint --global
+
+      - name: Run Linter
+        run: |
+          # Lệnh này tìm tất cả các file .js trong thư mục database và chạy JSHint
+          find ./server/database -name "*.js" -exec jshint {} +
+          echo "Linted all the js files successfully"
