@@ -1,6 +1,3 @@
-# Uncomment the required imports before adding the code
-
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import logout, login, authenticate
@@ -12,7 +9,8 @@ import os
 # Imports cho các hàm tiện ích
 from .models import CarMake, CarModel
 from .populate import initiate
-from .restapis import get_request, analyze_review_sentiments, post_review
+from .restapis import post_review
+# Xóa các import không dùng (F401): render, get_request, analyze_review_sentiments
 
 
 # Get an instance of a logger
@@ -97,7 +95,7 @@ def get_cars(request):
     cars = []
 
     for car_model in car_models:
-        # Lưu ý: Cú pháp này yêu cầu CarModel phải có thuộc tính car_make là đối tượng CarMake
+        # Cú pháp này yêu cầu CarModel phải có thuộc tính car_make là đối tượng CarMake
         cars.append({
             "CarModel": car_model.name,
             "CarMake": car_model.car_make.name
@@ -116,7 +114,6 @@ DATA_FILE_PATH = os.path.join(
 
 # Giữ tên hàm là get_dealerships theo lựa chọn của bạn
 def get_dealerships(request, state="All"):
-
     try:
         # 1. Đọc toàn bộ dữ liệu từ file JSON
         with open(DATA_FILE_PATH, 'r', encoding='utf-8') as f:
@@ -136,7 +133,9 @@ def get_dealerships(request, state="All"):
             ]
 
         # 4. Trả về kết quả
-        return JsonResponse({"status": 200, "dealers": dealerships_list}, safe=False)
+        return JsonResponse(
+            {"status": 200, "dealers": dealerships_list}, safe=False
+        )
 
     except FileNotFoundError:
         return JsonResponse(
@@ -144,13 +143,12 @@ def get_dealerships(request, state="All"):
             status=404
         )
     except Exception as e:
-        return JsonResponse({"error": f"Error processing request: {str(e)}"}, status=500)
+        return JsonResponse(
+            {"error": f"Error processing request: {str(e)}"}, status=500
+        )
 
 
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
-# trong server/djangoapp/views.py
-# (Sử dụng lại các import đã có: json, JsonResponse, os, settings, BASE_DIR)
-
 def get_dealer_reviews(request, dealer_id):
     try:
         # 1. Định nghĩa đường dẫn tuyệt đối đến file reviews.json
@@ -166,20 +164,25 @@ def get_dealer_reviews(request, dealer_id):
         all_reviews = data['reviews']
 
         # 4. Lọc các bài đánh giá theo dealer_id
-        # Chú ý: Trường 'dealership' trong JSON là số nguyên (15, 23, 29),
-        # nên chúng ta so sánh với dealer_id (cũng là số nguyên).
+        # Chú ý: Trường 'dealership' trong JSON là số nguyên
         dealer_reviews = [
             review for review in all_reviews
             if review.get('dealership') == dealer_id
         ]
 
         # 5. Trả về kết quả
-        return JsonResponse({"status": 200, "reviews": dealer_reviews}, safe=False)
+        return JsonResponse(
+            {"status": 200, "reviews": dealer_reviews}, safe=False
+        )
 
     except FileNotFoundError:
-        return JsonResponse({"error": "Reviews data file not found"}, status=404)
+        return JsonResponse(
+            {"error": "Reviews data file not found"}, status=404
+        )
     except Exception as e:
-        return JsonResponse({"error": f"Error processing reviews: {str(e)}"}, status=500)
+        return JsonResponse(
+            {"error": f"Error processing reviews: {str(e)}"}, status=500
+        )
 
 
 # Create a `get_dealer_details` view to render the dealer details
@@ -195,48 +198,47 @@ def get_dealer_details(request, dealer_id):
         all_dealers = data['dealerships']
 
         # Tìm đại lý theo ID
-        dealer_obj = next((d for d in all_dealers if d['id'] == dealer_id), None)
+        dealer_obj = next(
+            (d for d in all_dealers if d['id'] == dealer_id), None
+        )
 
         if dealer_obj:
             # Trả về một mảng chứa 1 đối tượng để khớp với front-end hiện tại
-            return JsonResponse({"status": 200, "dealer": [dealer_obj]}, safe=False)
+            return JsonResponse(
+                {"status": 200, "dealer": [dealer_obj]}, safe=False
+            )
         else:
             return JsonResponse({"error": "Dealer not found"}, status=404)
 
     except FileNotFoundError:
-        return JsonResponse({"error": "Dealerships data file not found"}, status=404)
+        return JsonResponse(
+            {"error": "Dealerships data file not found"}, status=404
+        )
     except Exception as e:
-        return JsonResponse({"error": f"Error processing request: {str(e)}"}, status=500)
+        return JsonResponse(
+            {"error": f"Error processing request: {str(e)}"}, status=500
+        )
 
 
 # Create a `add_review` view to submit a review
 def add_review(request):
-    # Sửa lỗi E712 (so sánh boolean)
     if not request.user.is_anonymous:
         data = json.loads(request.body)
         try:
-            # Xóa biến response không dùng (F841)
             post_review(data)
             return JsonResponse({"status": 200})
         except Exception as e:
-            # Sửa lỗi E722 (except trần)
             print(f"Error posting review: {e}")
-            return JsonResponse({"status": 401, "message": "Error in posting review"})
+            return JsonResponse(
+                {"status": 401, "message": "Error in posting review"}
+            )
     else:
         return JsonResponse({"status": 403, "message": "Unauthorized"})
 
 
-# Xóa định nghĩa lại DATA_FILE_PATH vì đã định nghĩa ở trên (F811)
-# DATA_FILE_PATH = os.path.join(
-#     BASE_DIR, 'database', 'data', 'dealerships.json'
-# )
-
-
 @csrf_exempt
 def post_review(request):
-    # Hàm này trùng lặp với hàm đã được định nghĩa ở trên.
-    # Tuy nhiên, nếu bạn đang sử dụng hàm này để ghi vào file reviews.json
-    # (như trong phần code bạn cung cấp ở cuối), tôi sẽ làm sạch nó.
+    # Hàm này dùng để ghi review vào file JSON cục bộ
     if request.method == 'POST':
         try:
             # 1. Định nghĩa đường dẫn file reviews.json
@@ -251,10 +253,10 @@ def post_review(request):
             # 3. Nhận dữ liệu đánh giá mới từ request
             new_review_data = json.loads(request.body)
 
-            # *** ĐIỀU CHỈNH KIỂU DỮ LIỆU ***
             # Ép kiểu dealer_id từ chuỗi (từ Frontend) sang số nguyên
             if new_review_data.get('dealership'):
-                new_review_data['dealership'] = int(new_review_data['dealership'])
+                new_review_data['dealership'] = \
+                    int(new_review_data['dealership'])
 
             # 4. Gán ID mới (ID bằng ID lớn nhất hiện tại + 1)
             all_reviews = reviews_data.get('reviews', [])
@@ -274,7 +276,8 @@ def post_review(request):
                 f"for dealer ID {new_review_data.get('dealership')}"
             )
             return JsonResponse(
-                {"status": 200, "message": "Review submitted and saved successfully"},
+                {"status": 200,
+                 "message": "Review submitted and saved successfully"},
                 status=200
             )
 
