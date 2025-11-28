@@ -24,9 +24,14 @@ ALLOWED_HOSTS = ["*", ".cognitiveclass.ai", "localhost", "127.0.0.1"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.cognitiveclass.ai",
-    "https://*.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai",
-    # Sửa E501: Dòng quá dài
-    "https://minhnlnce181-8000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai",
+    (
+        "https://*.theianext-1-labs-prod-misc-tools-us-east-0"
+        ".proxy.cognitiveclass.ai"
+    ),
+    (
+        "https://minhnlnce181-8000.theianext-1-labs-prod-misc-tools-us-east-0"
+        ".proxy.cognitiveclass.ai"
+    ),
 ]
 
 
