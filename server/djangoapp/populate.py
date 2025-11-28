@@ -1,5 +1,4 @@
 from .models import CarMake, CarModel
-
 def initiate():
     """
     Initializes the database with CarMake and CarModel data.
@@ -11,7 +10,6 @@ def initiate():
         {"name": "Kia", "description": "Great cars. Korean technology"},
         {"name": "Toyota", "description": "Great cars. Japanese technology"},
     ]
-
     car_make_instances = []
     for data in car_make_data:
         car_make_instances.append(
@@ -20,7 +18,6 @@ def initiate():
                 description=data['description']
             )
         )
-
     # Create CarModel instances with the corresponding CarMake instances
     car_model_data = [
         {
@@ -85,7 +82,6 @@ def initiate():
         },
         # Add more CarModel instances as needed
     ]
-
     for data in car_model_data:
         CarModel.objects.create(
             name=data['name'],
@@ -93,4 +89,3 @@ def initiate():
             type=data['type'],
             year=data['year']
         )
-        
