@@ -9,8 +9,8 @@ import os
 # Imports cho các hàm tiện ích
 from .models import CarMake, CarModel
 from .populate import initiate
-from .restapis import post_review
-# Xóa các import không dùng (F401): render, get_request, analyze_review_sentiments
+# from .restapis import post_review
+
 
 
 # Get an instance of a logger
@@ -99,7 +99,8 @@ def get_cars(request):
     cars = []
 
     for car_model in car_models:
-        # Cú pháp này yêu cầu CarModel phải có thuộc tính car_make là đối tượng CarMake
+        # Cú pháp này yêu cầu CarModel phải 
+        # có thuộc tính car_make là đối tượng CarMake
         cars.append({
             "CarModel": car_model.name,
             "CarMake": car_model.car_make.name
@@ -130,7 +131,8 @@ def get_dealerships(request, state="All"):
         if state == "All":
             dealerships_list = all_dealers
         else:
-            # Lọc danh sách theo state (sử dụng trường 'st' hoặc 'state' trong JSON)
+            # Lọc danh sách theo state 
+            # (sử dụng trường 'st' hoặc 'state' trong JSON)
             dealerships_list = [
                 dealer for dealer in all_dealers
                 if dealer.get('st') == state or dealer.get('state') == state
