@@ -1,5 +1,6 @@
 from .models import CarMake, CarModel
 
+
 def initiate():
     """
     Initializes the database with CarMake and CarModel data.
