@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us</title>
+
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
+
+    <style>
+        .contact-container {
+            width: 70%;
+            margin: auto;
+            margin-top: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .contact-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: darkcyan;
+        }
+
+        .contact-item {
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        .icon {
+            font-weight: bold;
+            color: darkturquoise;
+            margin-right: 8px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color:darkturquoise; height: 1in;">
+    <div class="container-fluid">
+        <h2 style="padding-right: 5%;">Dealerships</h2>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" style="font-size: larger;" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="font-size: larger;" href="/about">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" style="font-size: larger;" href="/contact">Contact Us</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Contact Content -->
+<div class="contact-container">
+    <h1 class="contact-title">Get in Touch with Us</h1>
+
+    <p class="contact-item"><span class="icon">📍 Address:</span> 1234 Car Avenue, Toronto, Canada</p>
+    <p class="contact-item"><span class="icon">📞 Phone:</span> +1 437 555 0199</p>
+    <p class="contact-item"><span class="icon">📧 Email:</span> support@bestcarsdealership.com</p>
+    <p class="contact-item"><span class="icon">⏰ Working Hours:</span> Mon – Sat: 9:00 AM – 8:00 PM</p>
+
+    <hr>
+
+    <h4>Follow Us</h4>
+    <p class="contact-item">
+        <span class="icon">🌐 Website:</span> www.bestcarsdealership.com <br>
+        <span class="icon">📘 Facebook:</span> fb.com/bestcars <br>
+        <span class="icon">📷 Instagram:</span> @bestcars_official
+    </p>
+</div>
+
+</body>
+</html>
